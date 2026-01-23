@@ -23,7 +23,7 @@ company during your work or study time, bringing a touch of relaxation and delig
 
 ### Prerequisites
 
-- Java 21
+- Java 25
 
 ## Installation & Running
 
