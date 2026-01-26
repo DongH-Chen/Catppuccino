@@ -18,14 +18,9 @@ class Stage : JPanel() {
 
     private fun calculateBubblePosition(action: Behave, direction: Direction): Point {
         return when (action) {
-            Behave.SLEEP, Behave.LAYING, Behave.LEFT, Behave.RIGHT -> {
-                val x = if (direction == Direction.LEFT) 0 else 30 + 30
-                Point(x, 40)
-            }
+            Behave.SLEEP, Behave.LAYING, Behave.LEFT, Behave.RIGHT -> Point(if (direction == Direction.LEFT) 0 else 60, 40)
 
-            Behave.UP, Behave.LICKING, Behave.SITTING -> {
-                Point(30, 40 - 25)
-            }
+            Behave.UP, Behave.LICKING, Behave.SITTING -> Point(30, 15)
 
             else -> Point(30, 40)
         }
