@@ -4,18 +4,16 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 public final class Utils {
     public static final String PROJECT_NAME = "Catppuccino";
-    private static final Map<String, BufferedImage> FLIP_CACHE = new HashMap<>();
-
-    public static BufferedImage flipImageDirect(BufferedImage img, String cacheKey) {
-        if (cacheKey == null) return flipImageDirect(img);
-        return FLIP_CACHE.computeIfAbsent(cacheKey, _ -> flipImageDirect(img));
-    }
+//    private static final Map<String, BufferedImage> FLIP_CACHE = new HashMap<>();
+//
+//    public static BufferedImage flipImageDirect(BufferedImage img, String cacheKey) {
+//        if (cacheKey == null) return flipImageDirect(img);
+//        return FLIP_CACHE.computeIfAbsent(cacheKey, _ -> flipImageDirect(img));
+//    }
 
     public static BufferedImage flipImageDirect(BufferedImage img) {
         BufferedImage bImage = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_ARGB);
