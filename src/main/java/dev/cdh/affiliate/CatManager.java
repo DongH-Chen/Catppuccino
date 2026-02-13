@@ -44,8 +44,7 @@ public final class CatManager {
                 if ((animationSteps - currentAction.getDelay()) > 40) {
                     animationSteps = 0;
                     frameNum = 0;
-                    if (ran.nextBoolean()) changeAction(Behave.CURLED);
-                    else changeAction(Behave.SLEEP);
+                    changeAction(ran.nextBoolean() ? Behave.CURLED : Behave.SLEEP);
                 }
             } else if (currentAction == Behave.SITTING && frameNum == currentAction.getFrame() - 1) {
                 changeAction(Behave.LICKING);
@@ -81,18 +80,11 @@ public final class CatManager {
             if (state == State.WANDER) {
                 var curPos = win.getLocationOnScreen();
                 if (abs(curPos.x - wanderLoc.x) >= 3) {
-                    if (curPos.x > wanderLoc.x) changeAction(Behave.LEFT);
-                    else changeAction(Behave.RIGHT);
-
+                    changeAction(curPos.x > wanderLoc.x ? Behave.LEFT : Behave.RIGHT);
                 } else {
-                    if (curPos.y > wanderLoc.y) changeAction(Behave.UP);
-                    else changeAction(Behave.DOWN);
+                    changeAction(curPos.y > wanderLoc.y ? Behave.UP : Behave.DOWN);
                 }
-                if (wanderLoc.distance(curPos) < 3) {
-                    state = State.DEFAULT;
-                } else {
-                    state = State.WANDER;
-                }
+                state = wanderLoc.distance(curPos) < 3 ? State.DEFAULT : State.WANDER;
             }
             var flag = false;
             if (currentAction == Behave.LEFT) {
@@ -100,11 +92,7 @@ public final class CatManager {
             } else if (currentAction == Behave.RIGHT) {
                 layingDir = Direction.RIGHT;
             } else if (state != State.WANDER && (currentAction == Behave.UP || currentAction == Behave.DOWN)) {
-                if (ran.nextInt(3) >= 1) {
-                    flag = changeAction(Behave.LAYING);
-                } else {
-                    flag = changeAction(Behave.SITTING);
-                }
+                flag = ran.nextInt(3) >= 1 ? changeAction(Behave.LAYING) : changeAction(Behave.SITTING);
             }
             if (flag) frameNum = 0;
         }

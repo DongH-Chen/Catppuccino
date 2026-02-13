@@ -11,8 +11,8 @@ import java.awt.event.MouseEvent;
 import static dev.cdh.affiliate.CatManager.*;
 
 public final class CatWindow extends JWindow {
-    private static final int WINDOW_HEIGHT = 100,
-    WINDOW_WIDTH = 100;
+    private static final int WINDOW_HEIGHT = 100, WINDOW_WIDTH = 100;
+
     public CatWindow() {
         setType(Type.UTILITY);
         var dim = new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT);

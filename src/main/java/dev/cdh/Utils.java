@@ -8,6 +8,7 @@ import java.util.Objects;
 
 public final class Utils {
     public static final String PROJECT_NAME = "Catppuccino";
+
     public static BufferedImage flipImage(BufferedImage img) {
         BufferedImage bImage = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = bImage.createGraphics();
