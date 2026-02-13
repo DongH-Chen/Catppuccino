@@ -8,9 +8,8 @@ import java.time.LocalDateTime;
 import static dev.cdh.affiliate.CatManager.*;
 
 public final class Main {
-    private static final int ANIMATION_UPDATE_DELAY = 10,
-            DAYTIME_WANDER_INTERVAL = 6000,
-            NIGHTTIME_WANDER_INTERVAL = 30000;
+    private static int wanderCount = 0;
+    private static final int time = LocalDateTime.now().getHour();
 
     static void main() {
         SwingUtilities.invokeLater(() -> {
@@ -18,17 +17,17 @@ public final class Main {
             win.setVisible(true);
             changeAction(Behave.CURLED);
         });
-        Timer eventLoop = new Timer(ANIMATION_UPDATE_DELAY, _ -> {
+
+        new Timer(10, _ -> {
             handleFrames();
             performMovement();
             updateAnimation();
             manageBubbleState();
             win.repaint();
-        });
-        int time = LocalDateTime.now().getHour();
-        int DELAY = time < 18 && time > 8 ? DAYTIME_WANDER_INTERVAL : NIGHTTIME_WANDER_INTERVAL;
-        Timer wanderingLoop = new Timer(DELAY, _ -> tryWandering());
-        eventLoop.start();
-        wanderingLoop.start();
+            if (++wanderCount >= (time < 18 && time > 8 ? 600 : 3000)) {
+                tryWandering();
+                wanderCount = 0;
+            }
+        }).start();
     }
 }
