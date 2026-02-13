@@ -38,11 +38,11 @@ public final class Stage extends JPanel {
 
     @Override
     protected void paintComponent(final Graphics g) {
-        BufferedImage img = currFrames.get(frameNum);
-        BufferedImage flippedImage = needsFlipping(currentAction, layingDir) ? Utils.flipImage(img) : img;
+        BufferedImage img = currFrames.get(frameNum());
+        BufferedImage flippedImage = needsFlipping(currentAction, layingDir) ? Utils.flipImageDirect(img) : img;
         g.drawImage(flippedImage, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, null);
         if (bubbleState != BubbleState.NONE) {
-            BufferedImage bufferedImage = currBubbleFrames.get(bubbleFrame);
+            BufferedImage bufferedImage = currBubbleFrames.get(bubbleFrame());
             Point position = calculateBubblePosition(currentAction, layingDir);
             g.drawImage(bufferedImage, position.x, position.y, BUBBLE_SIZE, BUBBLE_SIZE, null);
         }

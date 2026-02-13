@@ -32,21 +32,21 @@ public final class CatWindow extends JWindow {
             @Override
             public void mouseDragged(final MouseEvent e) {
                 setLocation(e.getLocationOnScreen().x - dragOffset.x, e.getLocationOnScreen().y - dragOffset.y);
-                if (changeAction(Behave.RISING)) frameNum = 0;
+                if (changeAction(Behave.RISING)) setFrameNum(0);
             }
 
             @Override
             public void mouseReleased(final MouseEvent e) {
                 if (currentAction == Behave.RISING) {
                     changeAction(Behave.LAYING);
-                    frameNum = 0;
+                    setFrameNum(0);
                 }
             }
 
             @Override
             public void mouseClicked(final MouseEvent e) {
                 bubbleState = BubbleState.HEART;
-                bubbleFrame = 0;
+                setBubbleFrame(0);
             }
         };
         addMouseMotionListener(mouseAdapter);

@@ -24,7 +24,7 @@ public final class CatManager {
     public static State state = State.DEFAULT;
     public static final Point wanderLoc = new Point(0, 0);
     public static BubbleState bubbleState = BubbleState.NONE;
-    public static int bubbleFrame = 0, bubbleSteps = 0, animationSteps = 0, frameNum = 0;
+    private static int packedValue = 0;
     private static final RandomGenerator ran = RandomGenerator.getDefault();
 
     public static boolean changeAction(Behave behave) {
@@ -38,24 +38,26 @@ public final class CatManager {
     }
 
     public static void updateAnimation() {
-        animationSteps++;
-        if (animationSteps >= currentAction.getDelay()) {
-            if (currentAction == Behave.LAYING && frameNum == currentAction.getFrame() - 1) {
-                if ((animationSteps - currentAction.getDelay()) > 40) {
-                    animationSteps = 0;
-                    frameNum = 0;
+        int animationSteps = animationSteps();
+        setAnimationSteps(++animationSteps);
+        if (animationSteps() >= currentAction.getDelay()) {
+            if (currentAction == Behave.LAYING && frameNum() == currentAction.getFrame() - 1) {
+                if ((animationSteps() - currentAction.getDelay()) > 40) {
+                    setAnimationSteps(0);
+                    setFrameNum(0);
                     changeAction(ran.nextBoolean() ? Behave.CURLED : Behave.SLEEP);
                 }
-            } else if (currentAction == Behave.SITTING && frameNum == currentAction.getFrame() - 1) {
+            } else if (currentAction == Behave.SITTING && frameNum() == currentAction.getFrame() - 1) {
                 changeAction(Behave.LICKING);
-                animationSteps = 0;
-                frameNum = 0;
+                setAnimationSteps(0);
+                setFrameNum(0);
             } else {
-                frameNum++;
-                animationSteps = 0;
+                int frameNum = frameNum();
+                setFrameNum(++frameNum);
+                setAnimationSteps(0);
             }
         }
-        if (frameNum >= currentAction.getFrame()) frameNum = 0;
+        if (frameNum() >= currentAction.getFrame()) setFrameNum(0);
     }
 
     public static void manageBubbleState() {
@@ -63,14 +65,16 @@ public final class CatManager {
             if (currentAction == Behave.SLEEP || currentAction == Behave.CURLED) bubbleState = BubbleState.ZZZ;
             else if (currentAction != Behave.SITTING) bubbleState = BubbleState.NONE;
         }
-        bubbleSteps++;
+        int bubbleSteps = bubbleSteps();
+        setBubbleSteps(++bubbleSteps);
         currBubbleFrames = bubbleFrames.getOrDefault(bubbleState.name(), bubbleFrames.get(BubbleState.HEART.name()));
         if (bubbleSteps >= bubbleState.getDelay()) {
-            bubbleFrame++;
-            bubbleSteps = 0;
+            int bubbleFrame = bubbleFrame();
+            setBubbleFrame(++bubbleFrame);
+            setBubbleSteps(0);
         }
-        if (bubbleFrame >= bubbleState.getFrame()) {
-            bubbleFrame = 0;
+        if (bubbleFrame() >= bubbleState.getFrame()) {
+            setBubbleFrame(0);
             if (bubbleState == BubbleState.HEART) bubbleState = BubbleState.NONE;
         }
     }
@@ -94,7 +98,7 @@ public final class CatManager {
             } else if (state != State.WANDER && (currentAction == Behave.UP || currentAction == Behave.DOWN)) {
                 flag = ran.nextInt(3) >= 1 ? changeAction(Behave.LAYING) : changeAction(Behave.SITTING);
             }
-            if (flag) frameNum = 0;
+            if (flag) setFrameNum(0);
         }
     }
 
@@ -134,5 +138,37 @@ public final class CatManager {
             );
         } while (abs(screenLoc.y - loc.y) <= 400 && abs(screenLoc.x - loc.x) <= 400);
         wanderLoc.setLocation(loc.x, loc.y);
+    }
+
+    public static int frameNum() {
+        return packedValue & 0xff;
+    }
+
+    public static void setFrameNum(int frameNum) {
+        packedValue = (packedValue & 0xffffff00) | (frameNum & 0xff);
+    }
+
+    public static int animationSteps() {
+        return (packedValue >> 8) & 0xff;
+    }
+
+    public static void setAnimationSteps(int animationSteps) {
+        packedValue = (packedValue & 0xffff00ff) | ((animationSteps & 0xff) << 8);
+    }
+
+    public static int bubbleFrame() {
+        return (packedValue >> 16) & 0xff;
+    }
+
+    public static void setBubbleFrame(int bubbleFrame) {
+        packedValue = (packedValue & 0xff00ffff) | ((bubbleFrame & 0xff) << 16);
+    }
+
+    public static int bubbleSteps() {
+        return (packedValue >> 24) & 0xff;
+    }
+
+    public static void setBubbleSteps(int bubbleSteps) {
+        packedValue = (packedValue & 0x00ffffff) | ((bubbleSteps & 0xff) << 24);
     }
 }
