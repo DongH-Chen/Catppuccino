@@ -32,7 +32,7 @@ tasks.register<Jar>("fatJar") {
             "Main-Class" to "dev.cdh.Main",
             "Implementation-Title" to project.name,
             "Implementation-Version" to project.version,
-            "Implementation-Vendor" to "me.cdh",
+            "Implementation-Vendor" to "dev.cdh",
             "Created-By" to "Gradle ${gradle.gradleVersion}",
             "Built-By" to System.getProperty("user.name"),
             "Build-Jdk" to System.getProperty("java.version")
