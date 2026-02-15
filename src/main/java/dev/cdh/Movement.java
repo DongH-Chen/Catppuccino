@@ -1,4 +1,4 @@
-package dev.cdh.affiliate;
+package dev.cdh;
 
 import dev.cdh.constants.Behave;
 

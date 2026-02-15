@@ -1,5 +1,6 @@
 package dev.cdh.affiliate;
 
+import dev.cdh.Movement;
 import dev.cdh.constants.Behave;
 import dev.cdh.constants.BubbleState;
 import dev.cdh.constants.Direction;
@@ -96,7 +97,7 @@ public final class Cat {
         animationState.reset();
     }
 
-    public void manageBubbleState() {
+    private void manageBubbleState() {
         if (bubbleState != BubbleState.HEART) {
             updateBubbleStateBasedOnAction();
         }
