@@ -13,13 +13,14 @@ public final class CatController {
     public CatController(Cat cat) {
         this.cat = cat;
         int hour = LocalDateTime.now().getHour();
+        // Is daytime or not?
         this.wanderInterval = (hour < 18 && hour > 8) ? 600 : 3000;
     }
 
     public void start() {
         cat.window().setVisible(true);
         cat.changeAction(Behave.CURLED);
-        new Timer(10, _ -> {
+        new Timer(20, _ -> {
             cat.update();
             if (++wanderCount >= wanderInterval) {
                 cat.tryWandering();
