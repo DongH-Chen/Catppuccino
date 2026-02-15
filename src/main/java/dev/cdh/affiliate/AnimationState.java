@@ -1,5 +1,6 @@
 package dev.cdh.affiliate;
 
+@SuppressWarnings("unused")
 public final class AnimationState {
     private int frameNum = 0,
             animationSteps = 0,
