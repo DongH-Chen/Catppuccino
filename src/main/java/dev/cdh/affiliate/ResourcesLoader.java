@@ -1,6 +1,7 @@
 package dev.cdh.affiliate;
 
-import dev.cdh.Animate;
+import dev.cdh.constants.Behave;
+import dev.cdh.constants.BubbleState;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -10,39 +11,40 @@ import java.util.*;
 import java.util.random.RandomGenerator;
 
 public final class ResourcesLoader {
-    private static final List<String> catType = List.of("calico_cat", "grey_tabby_cat", "orange_cat", "white_cat");
-    private static final RandomGenerator ran = RandomGenerator.getDefault();
-    private static final String selectedCatType = catType.get(ran.nextInt(0, 4));
+    private static final List<String> CAT_TYPES = List.of("calico_cat", "grey_tabby_cat", "orange_cat", "white_cat");
+    private final String selectedCatType;
+    private static final RandomGenerator RAN = RandomGenerator.getDefault();
 
-    public static <T extends Enum<T> & Animate> Map<String, List<BufferedImage>> loadAllFrames(Class<T> clazz) {
-        Map<String, List<BufferedImage>> container = new HashMap<>();
-        EnumSet<T> enumSet = EnumSet.allOf(clazz);
-        for (T entry : enumSet) {
-            container.put(entry.name(), loadFrames(entry));
+    public ResourcesLoader() {
+        this.selectedCatType = CAT_TYPES.get(RAN.nextInt(CAT_TYPES.size()));
+    }
+
+    public List<BufferedImage> loadFrames(Behave behave) {
+        return loadFrames(behave.name().toLowerCase(), behave.getFrame());
+    }
+
+    public List<BufferedImage> loadBubbleFrames(BubbleState state) {
+        if (state == BubbleState.NONE) {
+            return Collections.emptyList();
         }
-        return container;
+        return loadFrames(state.name().toLowerCase(), state.getFrame());
     }
 
-    private static <T extends Enum<T> & Animate> List<BufferedImage> loadFrames(T entry) {
-        return loadFrame(entry.name(), entry.getFrame());
-    }
+    private List<BufferedImage> loadFrames(String actionName, int frameCount) {
+        List<BufferedImage> frames = new ArrayList<>(frameCount);
 
-    private static List<BufferedImage> loadFrame(String actionName, int frameCount) {
-        ArrayList<BufferedImage> imgContainer = new ArrayList<>();
         for (int i = 1; i <= frameCount; i++) {
-            String format = String.format("%s/%s/%s_%d.png", selectedCatType, actionName.toLowerCase(), actionName.toLowerCase(), i);
-            try (InputStream stream = ResourcesLoader.class.getClassLoader().getResourceAsStream(format)) {
+            String path = String.format("%s/%s/%s_%d.png",
+                    selectedCatType, actionName, actionName, i);
+
+            try (InputStream stream = getClass().getClassLoader().getResourceAsStream(path)) {
                 BufferedImage image = ImageIO.read(Objects.requireNonNull(stream));
-                imgContainer.add(image);
+                frames.add(image);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException("Failed to load: " + path, e);
             }
         }
-        imgContainer.trimToSize();
-        return imgContainer;
-    }
 
-    private ResourcesLoader() throws IllegalAccessException {
-        throw new IllegalAccessException("Can not be initialize!");
+        return frames;
     }
 }

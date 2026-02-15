@@ -1,7 +1,5 @@
 package dev.cdh.constants;
 
-import dev.cdh.Animate;
-
 public enum BubbleState implements Animate {
     ZZZ(4, 30),
     HEART(4, 50),

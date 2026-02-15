@@ -1,7 +1,5 @@
 package dev.cdh.constants;
 
-import dev.cdh.Animate;
-
 public enum Behave implements Animate {
     UP(4, 10),
     DOWN(4, 10),

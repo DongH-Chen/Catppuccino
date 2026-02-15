@@ -1,33 +1,21 @@
 package dev.cdh;
 
-import dev.cdh.constants.Behave;
+import dev.cdh.affiliate.Cat;
+import dev.cdh.affiliate.CatController;
+import dev.cdh.affiliate.ResourcesLoader;
+import dev.cdh.affiliate.SystemTrayManager;
 
 import javax.swing.*;
-import java.time.LocalDateTime;
-
-import static dev.cdh.affiliate.CatManager.*;
 
 public final class Main {
-    private static int wanderCount = 0;
-    private static final int time = LocalDateTime.now().getHour();
 
     static void main() {
         SwingUtilities.invokeLater(() -> {
-            Utils.initSystemTray();
-            win.setVisible(true);
-            changeAction(Behave.CURLED);
+            SystemTrayManager.initialize();
+            ResourcesLoader resourcesLoader = new ResourcesLoader();
+            Cat cat = new Cat(resourcesLoader);
+            CatController controller = new CatController(cat);
+            controller.start();
         });
-
-        new Timer(10, _ -> {
-            handleFrames();
-            performMovement();
-            updateAnimation();
-            manageBubbleState();
-            win.repaint();
-            if (++wanderCount >= (time < 18 && time > 8 ? 600 : 3000)) {
-                tryWandering();
-                wanderCount = 0;
-            }
-        }).start();
     }
 }

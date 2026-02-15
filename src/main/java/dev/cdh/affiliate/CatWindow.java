@@ -8,20 +8,28 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import static dev.cdh.affiliate.CatManager.*;
-
 public final class CatWindow extends JWindow {
-    private static final int WINDOW_HEIGHT = 100, WINDOW_WIDTH = 100;
+    private static final int WINDOW_SIZE = 100;
+    private final Cat cat;
 
-    public CatWindow() {
+    public CatWindow(Cat cat) {
+        this.cat = cat;
+        setupWindow();
+        setupMouseListeners();
+        add(new Stage(cat));
+    }
+
+    private void setupWindow() {
         setType(Type.UTILITY);
-        var dim = new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT);
-        setPreferredSize(dim);
-        setMinimumSize(dim);
+        setSize(WINDOW_SIZE, WINDOW_SIZE);
+        setPreferredSize(new Dimension(WINDOW_SIZE, WINDOW_SIZE));
         setLocationRelativeTo(null);
         setAlwaysOnTop(true);
-        setVisible(true);
-        MouseAdapter mouseAdapter = new MouseAdapter() {
+        setBackground(new Color(0, 0, 0, 0));
+    }
+
+    private void setupMouseListeners() {
+        MouseAdapter adapter = new MouseAdapter() {
             private final Point dragOffset = new Point(0, 0);
 
             @Override
@@ -32,26 +40,25 @@ public final class CatWindow extends JWindow {
             @Override
             public void mouseDragged(final MouseEvent e) {
                 setLocation(e.getLocationOnScreen().x - dragOffset.x, e.getLocationOnScreen().y - dragOffset.y);
-                if (changeAction(Behave.RISING)) setFrameNum(0);
+                if (cat.changeAction(Behave.RISING)) {
+                    cat.animationState().resetFrame();
+                }
             }
 
             @Override
             public void mouseReleased(final MouseEvent e) {
-                if (currentAction == Behave.RISING) {
-                    changeAction(Behave.LAYING);
-                    setFrameNum(0);
+                if (cat.currentAction() == Behave.RISING) {
+                    cat.changeAction(Behave.LAYING);
+                    cat.animationState().resetFrame();
                 }
             }
 
             @Override
             public void mouseClicked(final MouseEvent e) {
-                bubbleState = BubbleState.HEART;
-                setBubbleFrame(0);
+                cat.setBubbleState(BubbleState.HEART);
             }
         };
-        addMouseMotionListener(mouseAdapter);
-        addMouseListener(mouseAdapter);
-        setBackground(new Color(1.0f, 1.0f, 1.0f, 0.0f));
-        add(new Stage());
+        addMouseListener(adapter);
+        addMouseMotionListener(adapter);
     }
 }
