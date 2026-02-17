@@ -20,6 +20,7 @@ public final class Stage extends JPanel {
 
     public Stage(Cat cat) {
         this.cat = cat;
+        setDoubleBuffered(true);
         setOpaque(false);
         initializePositionCache();
     }
@@ -71,7 +72,7 @@ public final class Stage extends JPanel {
         if (needsFlipping()) {
             String flipKey = cat.currentAction().name() + state.frameNum();
 
-            img = ImageCache.getOrFlip(img,flipKey);
+            img = ImageCache.getOrFlip(img, flipKey);
         }
         g2d.drawImage(img, 0, 0, getWidth(), getHeight(), null);
     }

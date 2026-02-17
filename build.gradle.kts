@@ -24,7 +24,7 @@ java {
     }
 }
 
-tasks.register<Jar>("fatJar") {
+tasks.jar {
     group = "build"
 
     manifest {
