@@ -60,7 +60,7 @@ public final class Cat {
     private void updateAnimation() {
         animationState.incrementAnimationSteps();
 
-        if (animationState.animationSteps() >= currentAction.getDelay()) {
+        if (animationState.animationSteps() >= currentAction.delay()) {
             if (shouldTransitionFromLaying()) {
                 handleLayingTransition();
             } else if (shouldTransitionFromSitting()) {
@@ -70,18 +70,17 @@ public final class Cat {
             }
         }
 
-        if (animationState.frameNum() >= currentAction.getFrame()) {
+        if (animationState.frameNum() >= currentAction.frame()) {
             animationState.resetFrame();
         }
     }
 
     private boolean shouldTransitionFromLaying() {
-        return currentAction == Behave.LAYING &&
-                animationState.frameNum() == currentAction.getFrame() - 1;
+        return currentAction == Behave.LAYING && animationState.frameNum() == currentAction.frame() - 1;
     }
 
     private void handleLayingTransition() {
-        if (animationState.animationSteps() - currentAction.getDelay() > 40) {
+        if (animationState.animationSteps() - currentAction.delay() > 40) {
             animationState.reset();
             changeAction(ran.nextBoolean() ? Behave.CURLED : Behave.SLEEP);
         }
@@ -89,7 +88,7 @@ public final class Cat {
 
     private boolean shouldTransitionFromSitting() {
         return currentAction == Behave.SITTING &&
-                animationState.frameNum() == currentAction.getFrame() - 1;
+                animationState.frameNum() == currentAction.frame() - 1;
     }
 
     private void handleSittingTransition() {
@@ -104,11 +103,11 @@ public final class Cat {
 
         animationState.incrementBubbleSteps();
 
-        if (animationState.bubbleSteps() >= bubbleState.getDelay()) {
+        if (animationState.bubbleSteps() >= bubbleState.delay()) {
             animationState.nextBubbleFrame();
         }
 
-        if (animationState.bubbleFrame() >= bubbleState.getFrame()) {
+        if (animationState.bubbleFrame() >= bubbleState.frame()) {
             animationState.resetBubbleFrame();
             if (bubbleState == BubbleState.HEART) {
                 setBubbleState(BubbleState.NONE);
@@ -121,14 +120,6 @@ public final class Cat {
             setBubbleState(BubbleState.ZZZ);
         } else if (currentAction != Behave.SITTING) {
             setBubbleState(BubbleState.NONE);
-        }
-    }
-
-    public void setBubbleState(BubbleState state) {
-        if (this.bubbleState != state) {
-            this.bubbleState = state;
-            loadBubbleFrames(state);
-            animationState.resetBubbleFrame();
         }
     }
 
@@ -154,14 +145,12 @@ public final class Cat {
 
     private void handleMovementActions() {
         boolean flag = false;
-        if (currentAction == Behave.LEFT) {
-            layingDir = Direction.LEFT;
-        } else if (currentAction == Behave.RIGHT) {
-            layingDir = Direction.RIGHT;
-        } else if (state != State.WANDER &&
-                (currentAction == Behave.UP || currentAction == Behave.DOWN)) {
-            flag = ran.nextInt(3) >= 1 ?
-                    changeAction(Behave.LAYING) : changeAction(Behave.SITTING);
+        switch (currentAction) {
+            case LEFT -> layingDir = Direction.LEFT;
+            case RIGHT -> layingDir = Direction.RIGHT;
+            case Behave behave when state != State.WANDER && (behave == Behave.UP | behave == Behave.DOWN) ->
+                    flag = ran.nextInt(3) >= 1 ? changeAction(Behave.LAYING) : changeAction(Behave.SITTING);
+            default -> {}
         }
         if (flag) animationState.resetFrame();
     }
@@ -170,7 +159,7 @@ public final class Cat {
         Point loc = window.getLocation();
         Movement.move(loc, currentAction);
 
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension screenSize = Movement.calculateVirtualScreenBounds();
         Movement.clampToScreen(loc, screenSize, window.getSize());
 
         window.setLocation(loc);
@@ -183,6 +172,15 @@ public final class Cat {
         Point screenLoc = window.getLocationOnScreen();
         Point target = Movement.generateRandomTarget(screenLoc, window.getSize());
         wanderTarget.setLocation(target);
+    }
+
+    // Setters
+    public void setBubbleState(BubbleState state) {
+        if (bubbleState != state) {
+            bubbleState = state;
+            loadBubbleFrames(state);
+            animationState.resetBubbleFrame();
+        }
     }
 
     // Getters

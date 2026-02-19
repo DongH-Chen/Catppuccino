@@ -21,12 +21,12 @@ public enum Behave implements Animate {
     }
 
     @Override
-    public int getDelay() {
+    public int delay() {
         return delay;
     }
 
     @Override
-    public int getFrame() {
+    public int frame() {
         return frame;
     }
 }

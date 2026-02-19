@@ -31,7 +31,7 @@ public final class ResourcesLoader {
             return frames;
         }
         // then check global cache
-        frames = ImageCache.getOrLoadFrames(cacheKey, () -> loadFramesInternal(behave.name().toLowerCase(), behave.getFrame()));
+        frames = ImageCache.getOrLoadFrames(cacheKey, () -> loadFramesInternal(behave.name().toLowerCase(), behave.frame()));
         // Store into local cache
         localCache.put(cacheKey, frames);
         return frames;
@@ -48,7 +48,7 @@ public final class ResourcesLoader {
         }
         frames = ImageCache.getOrLoadFrames(cacheKey, () -> {
             String actionName = state.name().toLowerCase();
-            return loadFramesInternal(actionName, state.getFrame());
+            return loadFramesInternal(actionName, state.frame());
         });
         localCache.put(cacheKey, frames);
         return frames;
@@ -74,9 +74,6 @@ public final class ResourcesLoader {
 
     private BufferedImage loadImage(String path) {
         try (InputStream stream = getClass().getClassLoader().getResourceAsStream(path)) {
-            if (stream == null) {
-                throw new RuntimeException("Resource not found: " + path);
-            }
             return ImageIO.read(Objects.requireNonNull(stream));
         } catch (IOException e) {
             throw new RuntimeException("Failed to load: " + path, e);

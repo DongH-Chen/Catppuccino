@@ -14,19 +14,33 @@ public final class Movement {
             case LEFT -> location.translate(-1, 0);
             case UP -> location.translate(0, -1);
             case DOWN -> location.translate(0, 1);
-            default -> {}
+            default -> {
+            }
         }
     }
 
+    public static Dimension calculateVirtualScreenBounds() {
+        Rectangle virtualBounds = new Rectangle();
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice[] screens = ge.getScreenDevices();
+        for (GraphicsDevice screen : screens) {
+            GraphicsConfiguration config = screen.getDefaultConfiguration();
+            virtualBounds = virtualBounds.union(config.getBounds());
+        }
+        Dimension result = new Dimension();
+        result.setSize(virtualBounds.getWidth(), virtualBounds.getHeight());
+        return result;
+    }
+
     public static void clampToScreen(Point location, Dimension screenSize, Dimension windowSize) {
-        if (location.x > screenSize.width - windowSize.width) {
-            location.setLocation(screenSize.width - windowSize.width, location.y);
-        } else if (location.x < -10) {
-            location.setLocation(-10, location.y);
-        } else if (location.y > screenSize.height - windowSize.height) {
-            location.setLocation(location.x, screenSize.height - windowSize.height);
-        } else if (location.y < -35) {
-            location.setLocation(location.x, -35);
+        switch (location) {
+            case Point p when p.x > screenSize.width - windowSize.width ->
+                    location.setLocation(screenSize.width - windowSize.width, location.y);
+            case Point p when p.x < -10 -> location.setLocation(-10, p.y);
+            case Point p when p.y > screenSize.height - windowSize.height ->
+                    location.setLocation(location.x, screenSize.height - windowSize.height);
+            case Point p when p.y < -35 -> location.setLocation(location.x, -35);
+            default -> {}
         }
     }
 
