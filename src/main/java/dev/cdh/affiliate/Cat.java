@@ -150,7 +150,8 @@ public final class Cat {
             case RIGHT -> layingDir = Direction.RIGHT;
             case Behave behave when state != State.WANDER && (behave == Behave.UP | behave == Behave.DOWN) ->
                     flag = ran.nextInt(3) >= 1 ? changeAction(Behave.LAYING) : changeAction(Behave.SITTING);
-            default -> {}
+            default -> {
+            }
         }
         if (flag) animationState.resetFrame();
     }
@@ -159,8 +160,7 @@ public final class Cat {
         Point loc = window.getLocation();
         Movement.move(loc, currentAction);
 
-        Dimension screenSize = Movement.calculateVirtualScreenBounds();
-        Movement.clampToScreen(loc, screenSize, window.getSize());
+        Movement.clampToScreen(loc, Movement.SCREEN_SIZE, window.getSize());
 
         window.setLocation(loc);
     }

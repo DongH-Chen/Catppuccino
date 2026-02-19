@@ -6,20 +6,12 @@ import java.awt.*;
 import java.util.random.RandomGenerator;
 
 public final class Movement {
-    private Movement() {}
+    public static final Dimension SCREEN_SIZE = calculateVirtualScreenBounds();
 
-    public static void move(Point location, Behave action) {
-        switch (action) {
-            case RIGHT -> location.translate(1, 0);
-            case LEFT -> location.translate(-1, 0);
-            case UP -> location.translate(0, -1);
-            case DOWN -> location.translate(0, 1);
-            default -> {
-            }
-        }
+    private Movement() {
     }
 
-    public static Dimension calculateVirtualScreenBounds() {
+    private static Dimension calculateVirtualScreenBounds() {
         Rectangle virtualBounds = new Rectangle();
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice[] screens = ge.getScreenDevices();
@@ -32,6 +24,17 @@ public final class Movement {
         return result;
     }
 
+    public static void move(Point location, Behave action) {
+        switch (action) {
+            case RIGHT -> location.translate(1, 0);
+            case LEFT -> location.translate(-1, 0);
+            case UP -> location.translate(0, -1);
+            case DOWN -> location.translate(0, 1);
+            default -> {
+            }
+        }
+    }
+
     public static void clampToScreen(Point location, Dimension screenSize, Dimension windowSize) {
         switch (location) {
             case Point p when p.x > screenSize.width - windowSize.width ->
@@ -40,7 +43,8 @@ public final class Movement {
             case Point p when p.y > screenSize.height - windowSize.height ->
                     location.setLocation(location.x, screenSize.height - windowSize.height);
             case Point p when p.y < -35 -> location.setLocation(location.x, -35);
-            default -> {}
+            default -> {
+            }
         }
     }
 
