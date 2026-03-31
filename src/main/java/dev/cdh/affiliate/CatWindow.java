@@ -33,7 +33,7 @@ public final class CatWindow extends JWindow {
             private final Point dragOffset = new Point(0, 0);
 
             @Override
-            public void mousePressed(MouseEvent e) {
+            public void mousePressed(final MouseEvent e) {
                 dragOffset.setLocation(e.getX(), e.getY());
             }
 
