@@ -1,5 +1,5 @@
 plugins {
-    id("java")
+    kotlin("jvm") version "2.3.20"
     application
 }
 
@@ -18,10 +18,8 @@ application {
 dependencies {
 }
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(25))
-    }
+kotlin {
+    jvmToolchain(25)
 }
 
 tasks.jar {
