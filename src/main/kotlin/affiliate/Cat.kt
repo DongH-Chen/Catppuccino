@@ -7,12 +7,11 @@ import dev.cdh.constants.Direction
 import dev.cdh.constants.State
 import java.awt.Point
 import java.awt.image.BufferedImage
-import java.util.random.RandomGenerator
 import kotlin.math.abs
+import kotlin.random.Random
 
 class Cat(private val resourcesLoader: ResourcesLoader) {
     val window = CatWindow(this)
-    private val ran: RandomGenerator = RandomGenerator.getDefault()
 
     var currentAction = Behave.SLEEP
     lateinit var currentFrames: MutableList<BufferedImage?>
@@ -85,7 +84,7 @@ class Cat(private val resourcesLoader: ResourcesLoader) {
     private fun handleLayingTransition() {
         if (animationState.animationSteps - currentAction.delay > 40) {
             animationState.reset()
-            changeAction(if (ran.nextBoolean()) Behave.CURLED else Behave.SLEEP)
+            changeAction(if (Random.nextBoolean()) Behave.CURLED else Behave.SLEEP)
         }
     }
 
@@ -152,7 +151,7 @@ class Cat(private val resourcesLoader: ResourcesLoader) {
             currentAction == Behave.LEFT -> layingDir = Direction.LEFT
             currentAction == Behave.RIGHT -> layingDir = Direction.RIGHT
             state != State.WANDER && ((currentAction == Behave.UP) or (currentAction == Behave.DOWN)) -> flag =
-                if (ran.nextInt(3) >= 1) changeAction(Behave.LAYING) else changeAction(Behave.SITTING)
+                if (Random.nextInt(3) >= 1) changeAction(Behave.LAYING) else changeAction(Behave.SITTING)
             else -> {}
         }
         if (flag) animationState.resetFrame()
@@ -168,7 +167,7 @@ class Cat(private val resourcesLoader: ResourcesLoader) {
     }
 
     fun tryWandering() {
-        if (ran.nextBoolean()) return
+        if (Random.nextBoolean()) return
 
         state = State.WANDER
         val screenLoc = window.locationOnScreen

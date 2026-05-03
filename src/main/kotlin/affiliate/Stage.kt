@@ -61,7 +61,7 @@ internal class Stage(private val cat: Cat) : JPanel() {
         if (frames.isEmpty()) return
         var img = frames[state.frameNum]
         if (needsFlipping()) {
-            val flipKey = cat.currentAction.name + state.frameNum
+            val flipKey = "${cat.currentAction.name}${state.frameNum}"
 
             img = ImageCache.getOrFlip(img!!, flipKey)
         }

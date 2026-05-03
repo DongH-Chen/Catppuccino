@@ -50,13 +50,20 @@ tasks.jar {
 
     exclude("META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA")
 
-//    archiveClassifier.set("all")
 }
-
-//tasks.build {
-//    dependsOn("fatJar")
-//}
 
 tasks.test {
     useJUnitPlatform()
+}
+
+tasks.register<Copy>("copyAllDependencies") {
+    from(configurations.getByName("runtimeClasspath").map { if (it.isFile) it else it })
+
+    into(layout.buildDirectory.dir("libs/dependencies"))
+
+    rename { filename ->
+        val originalFile = File(filename)
+        val depName = originalFile.nameWithoutExtension
+        "${depName}.${originalFile.extension}"
+    }
 }

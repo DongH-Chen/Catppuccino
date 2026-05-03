@@ -10,8 +10,7 @@ import javax.imageio.ImageIO
 
 class ResourcesLoader {
     private val selectedCatType: String? = CAT_TYPES.random()
-    private val localCache: MutableMap<String?, MutableList<BufferedImage?>?> =
-        HashMap<String?, MutableList<BufferedImage?>?>()
+    private val localCache: MutableMap<String?, MutableList<BufferedImage?>?> = HashMap()
 
     fun loadFrames(behave: Behave): MutableList<BufferedImage?>? {
         val cacheKey = "$selectedCatType:${behave.name}"
@@ -47,7 +46,7 @@ class ResourcesLoader {
     }
 
     private fun loadFramesInternal(actionName: String?, frameCount: Int): MutableList<BufferedImage?> {
-        val frames: MutableList<BufferedImage?> = ArrayList<BufferedImage?>(frameCount)
+        val frames = ArrayList<BufferedImage?>(frameCount)
         for (i in 1..frameCount) {
             var image = loadImage("$selectedCatType/$actionName/${actionName}_$i.png")
             if (image.type != BufferedImage.TYPE_INT_ARGB) {
