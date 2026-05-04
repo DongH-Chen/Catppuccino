@@ -11,7 +11,7 @@ class CatController(private val cat: Cat) {
         if (hour in 8..<18) 600 else 3000
     }
 
-    fun start(){
+    fun start() {
         cat.window.isVisible = true
         cat.changeAction(Behave.CURLED)
         Timer(20) {

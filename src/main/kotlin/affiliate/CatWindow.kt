@@ -1,5 +1,6 @@
 package dev.cdh.affiliate
 
+import dev.cdh.WINDOW_SIZE
 import dev.cdh.constants.Behave
 import dev.cdh.constants.BubbleState
 import java.awt.Color
@@ -53,9 +54,5 @@ class CatWindow(private val cat: Cat) : JWindow() {
         }
         addMouseListener(adapter)
         addMouseMotionListener(adapter)
-    }
-
-    companion object {
-        private const val WINDOW_SIZE = 100
     }
 }

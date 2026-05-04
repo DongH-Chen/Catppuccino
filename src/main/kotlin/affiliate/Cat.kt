@@ -1,10 +1,13 @@
 package dev.cdh.affiliate
 
-import dev.cdh.Movement
+import dev.cdh.SCREEN_SIZE
+import dev.cdh.clampToScreen
 import dev.cdh.constants.Behave
 import dev.cdh.constants.BubbleState
 import dev.cdh.constants.Direction
 import dev.cdh.constants.State
+import dev.cdh.generateRandomTarget
+import dev.cdh.move
 import java.awt.Point
 import java.awt.image.BufferedImage
 import kotlin.math.abs
@@ -18,7 +21,7 @@ class Cat(private val resourcesLoader: ResourcesLoader) {
     lateinit var currentBubbleFrames: MutableList<BufferedImage?>
     var layingDir = Direction.RIGHT
     private var state = State.DEFAULT
-     var bubbleState = BubbleState.NONE
+    var bubbleState = BubbleState.NONE
         set(value) {
             if (field != value) {
                 field = value
@@ -152,6 +155,7 @@ class Cat(private val resourcesLoader: ResourcesLoader) {
             currentAction == Behave.RIGHT -> layingDir = Direction.RIGHT
             state != State.WANDER && ((currentAction == Behave.UP) or (currentAction == Behave.DOWN)) -> flag =
                 if (Random.nextInt(3) >= 1) changeAction(Behave.LAYING) else changeAction(Behave.SITTING)
+
             else -> {}
         }
         if (flag) animationState.resetFrame()
@@ -159,9 +163,8 @@ class Cat(private val resourcesLoader: ResourcesLoader) {
 
     private fun performMovement() {
         val loc = window.location
-        Movement.move(loc, currentAction)
-
-        Movement.clampToScreen(loc, Movement.SCREEN_SIZE, window.size)
+        loc.move(currentAction)
+        loc.clampToScreen(SCREEN_SIZE, window.size)
 
         window.location = loc
     }
@@ -171,7 +174,7 @@ class Cat(private val resourcesLoader: ResourcesLoader) {
 
         state = State.WANDER
         val screenLoc = window.locationOnScreen
-        val target = Movement.generateRandomTarget(screenLoc, window.size)
+        val target = screenLoc.generateRandomTarget(window.size)
         wanderTarget.location = target
     }
 }

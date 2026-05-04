@@ -57,6 +57,7 @@ tasks.test {
 }
 
 tasks.register<Copy>("copyAllDependencies") {
+    description = "copy dependencies to build directory"
     from(configurations.getByName("runtimeClasspath").map { if (it.isFile) it else it })
 
     into(layout.buildDirectory.dir("libs/dependencies"))
@@ -66,4 +67,25 @@ tasks.register<Copy>("copyAllDependencies") {
         val depName = originalFile.nameWithoutExtension
         "${depName}.${originalFile.extension}"
     }
+}
+
+val mergedClassesDir = layout.buildDirectory.dir("classes/kotlin/main")
+
+tasks.register<Copy>("mergeKotlinClasses"){
+    description = "merge module info file to destination"
+    dependsOn(tasks.compileKotlin)
+    from(tasks.compileKotlin.flatMap { it.destinationDirectory })
+    into(mergedClassesDir)
+    outputs.dir(mergedClassesDir)
+}
+
+tasks.compileJava {
+    dependsOn(tasks.compileKotlin)
+    destinationDirectory = mergedClassesDir
+    inputs.dir(mergedClassesDir).withPropertyName("compileKotlin")
+}
+
+tasks.jar {
+    dependsOn(tasks.compileJava, tasks.compileKotlin)
+    from(mergedClassesDir)
 }
