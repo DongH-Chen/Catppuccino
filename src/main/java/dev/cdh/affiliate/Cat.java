@@ -80,7 +80,8 @@ public final class Cat {
     }
 
     private void handleLayingTransition() {
-        if (animationState.animationSteps() - currentAction.delay() > 40) {
+        // Switch after about 0.8 seconds (24 steps × 33ms), keeping in sync with the original rhythm
+        if (animationState.animationSteps() - currentAction.delay() > 24) {
             animationState.reset();
             changeAction(ran.nextBoolean() ? Behave.CURLED : Behave.SLEEP);
         }
@@ -135,12 +136,26 @@ public final class Cat {
 
     private void handleWandering() {
         Point curPos = window.getLocationOnScreen();
+        if (wanderTarget.distance(curPos) < 3) {
+            // Reach the target: stop wandering and return to standby mode to avoid
+            // getting stuck at the edge of the screen
+            state = State.DEFAULT;
+            if (isMovingAction(currentAction)) {
+                changeAction(ran.nextBoolean() ? Behave.LAYING : Behave.SITTING);
+                animationState.resetFrame();
+            }
+            return;
+        }
         if (Math.abs(curPos.x - wanderTarget.x) >= 3) {
             changeAction(curPos.x > wanderTarget.x ? Behave.LEFT : Behave.RIGHT);
         } else {
             changeAction(curPos.y > wanderTarget.y ? Behave.UP : Behave.DOWN);
         }
-        state = wanderTarget.distance(curPos) < 3 ? State.DEFAULT : State.WANDER;
+    }
+
+    private static boolean isMovingAction(Behave behave) {
+        return behave == Behave.LEFT || behave == Behave.RIGHT
+                || behave == Behave.UP || behave == Behave.DOWN;
     }
 
     private void handleMovementActions() {
@@ -148,8 +163,10 @@ public final class Cat {
         switch (currentAction) {
             case LEFT -> layingDir = Direction.LEFT;
             case RIGHT -> layingDir = Direction.RIGHT;
-            case Behave behave when state != State.WANDER && (behave == Behave.UP | behave == Behave.DOWN) ->
-                    flag = ran.nextInt(3) >= 1 ? changeAction(Behave.LAYING) : changeAction(Behave.SITTING);
+            case Behave behave when state != State.WANDER &&
+                    (behave == Behave.UP || behave == Behave.DOWN) ->
+                    flag = ran.nextInt(3) >= 1
+                            ? changeAction(Behave.LAYING) : changeAction(Behave.SITTING);
             default -> {
             }
         }
@@ -160,7 +177,7 @@ public final class Cat {
         Point loc = window.getLocation();
         Movement.move(loc, currentAction);
 
-        Movement.clampToScreen(loc, Movement.SCREEN_SIZE, window.getSize());
+        Movement.clampToScreen(loc, window.getSize());
 
         window.setLocation(loc);
     }
@@ -174,6 +191,13 @@ public final class Cat {
         wanderTarget.setLocation(target);
     }
 
+    /**
+     * Cancel roaming mode (for example, when the user picks up the kitten).
+     */
+    public void stopWandering() {
+        state = State.DEFAULT;
+    }
+
     // Setters
     public void setBubbleState(BubbleState state) {
         if (bubbleState != state) {
@@ -184,6 +208,10 @@ public final class Cat {
     }
 
     // Getters
+    public String catType() {
+        return resourceLoader.catType();
+    }
+
     public Behave currentAction() {
         return currentAction;
     }

@@ -13,38 +13,36 @@ import java.util.List;
 import java.util.Map;
 
 public final class Stage extends JPanel {
-    private static final int BASE_X = 30, BASE_Y = 40, BUBBLE_SIZE = 30;
-    private static final Map<Behave, PositionCalculator> POSITION_CACHE = new EnumMap<>(Behave.class);
+    private static final int BASE_X = 30, BASE_Y = 40;
+
+    private static final Map<Behave, PositionCalculator> POSITION_CACHE = createPositionCache();
+
     private final Cat cat;
-    private final Rectangle bubbleRect = new Rectangle();
 
     public Stage(Cat cat) {
         this.cat = cat;
         setDoubleBuffered(true);
         setOpaque(false);
-        initializePositionCache();
     }
 
-    private void initializePositionCache() {
-        POSITION_CACHE.put(Behave.SLEEP, dir -> new Point(dir == Direction.LEFT ? 0 : BASE_X + 30, BASE_Y));
-        POSITION_CACHE.put(Behave.LAYING, dir ->
-                new Point(dir == Direction.LEFT ? 0 : BASE_X + 30, BASE_Y));
-        POSITION_CACHE.put(Behave.LEFT, dir ->
-                new Point(dir == Direction.LEFT ? 0 : BASE_X + 30, BASE_Y));
-        POSITION_CACHE.put(Behave.RIGHT, dir ->
-                new Point(dir == Direction.LEFT ? 0 : BASE_X + 30, BASE_Y));
-        POSITION_CACHE.put(Behave.UP, _ -> new Point(BASE_X, BASE_Y - 25));
-        POSITION_CACHE.put(Behave.LICKING, _ -> new Point(BASE_X, BASE_Y - 25));
-        POSITION_CACHE.put(Behave.SITTING, _ -> new Point(BASE_X, BASE_Y - 25));
+    private static Map<Behave, PositionCalculator> createPositionCache() {
+        Map<Behave, PositionCalculator> cache = new EnumMap<>(Behave.class);
+        cache.put(Behave.SLEEP, dir -> new Point(dir == Direction.LEFT ? 0 : BASE_X + 30, BASE_Y));
+        cache.put(Behave.LAYING, dir -> new Point(dir == Direction.LEFT ? 0 : BASE_X + 30, BASE_Y));
+        cache.put(Behave.LEFT, dir -> new Point(dir == Direction.LEFT ? 0 : BASE_X + 30, BASE_Y));
+        cache.put(Behave.RIGHT, dir -> new Point(dir == Direction.LEFT ? 0 : BASE_X + 30, BASE_Y));
+        cache.put(Behave.UP, ignored -> new Point(BASE_X, BASE_Y - 25));
+        cache.put(Behave.LICKING, ignored -> new Point(BASE_X, BASE_Y - 25));
+        cache.put(Behave.SITTING, ignored -> new Point(BASE_X, BASE_Y - 25));
+        return cache;
     }
 
     private boolean needsFlipping() {
         Behave action = cat.currentAction();
         Direction direction = cat.layingDir();
-        return (action == Behave.LAYING || action == Behave.RISING || action == Behave.SLEEP)
-                && direction == Direction.LEFT
-                || action == Behave.CURLED
-                && direction == Direction.RIGHT;
+        return ((action == Behave.LAYING || action == Behave.RISING || action == Behave.SLEEP)
+                && direction == Direction.LEFT)
+                || (action == Behave.CURLED && direction == Direction.RIGHT);
     }
 
     private Point calculateBubblePosition() {
@@ -70,11 +68,12 @@ public final class Stage extends JPanel {
         if (frames == null || frames.isEmpty()) return;
         BufferedImage img = frames.get(state.frameNum());
         if (needsFlipping()) {
-            String flipKey = cat.currentAction().name() + state.frameNum();
-
+            // 缓存键包含猫皮肤类型，避免不同皮肤之间撞键
+            String flipKey = cat.catType() + ":" + cat.currentAction().name() + ":" + state.frameNum();
             img = ImageCache.getOrFlip(img, flipKey);
         }
-        g2d.drawImage(img, 0, 0, getWidth(), getHeight(), null);
+        // 帧已在加载时预缩放到窗口尺寸，此处直接 1:1 绘制
+        g2d.drawImage(img, 0, 0, null);
     }
 
     private void paintBubbleIfNeeded(Graphics2D g2d) {
@@ -84,8 +83,8 @@ public final class Stage extends JPanel {
         AnimationState state = cat.animationState();
         BufferedImage bubble = frames.get(state.bubbleFrame());
         Point pos = calculateBubblePosition();
-        bubbleRect.setBounds(pos.x, pos.y, BUBBLE_SIZE, BUBBLE_SIZE);
-        g2d.drawImage(bubble, bubbleRect.x, bubbleRect.y, bubbleRect.width, bubbleRect.height, null);
+        // 气泡帧已在加载时预缩放到气泡尺寸
+        g2d.drawImage(bubble, pos.x, pos.y, null);
     }
 
     @FunctionalInterface

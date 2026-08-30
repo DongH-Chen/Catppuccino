@@ -2,6 +2,7 @@ package dev.cdh.affiliate;
 
 import dev.cdh.constants.Behave;
 import dev.cdh.constants.BubbleState;
+import dev.cdh.constants.Layout;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,7 +10,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public final class CatWindow extends JWindow {
-    private static final int WINDOW_SIZE = 100;
     private final Cat cat;
 
     public CatWindow(Cat cat) {
@@ -21,8 +21,8 @@ public final class CatWindow extends JWindow {
 
     private void setupWindow() {
         setType(Type.UTILITY);
-        setSize(WINDOW_SIZE, WINDOW_SIZE);
-        setPreferredSize(new Dimension(WINDOW_SIZE, WINDOW_SIZE));
+        setSize(Layout.WINDOW_SIZE, Layout.WINDOW_SIZE);
+        setPreferredSize(new Dimension(Layout.WINDOW_SIZE, Layout.WINDOW_SIZE));
         setLocationRelativeTo(null);
         setAlwaysOnTop(true);
         setBackground(new Color(0, 0, 0, 0));
@@ -35,6 +35,7 @@ public final class CatWindow extends JWindow {
             @Override
             public void mousePressed(final MouseEvent e) {
                 dragOffset.setLocation(e.getX(), e.getY());
+                cat.stopWandering();
             }
 
             @Override

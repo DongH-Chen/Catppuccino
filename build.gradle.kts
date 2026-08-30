@@ -16,6 +16,9 @@ application {
 }
 
 dependencies {
+    testImplementation(platform("org.junit:junit-bom:5.11.4"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 java {
@@ -40,24 +43,9 @@ tasks.jar {
     }
 
     from(sourceSets.main.get().output)
-
-    dependsOn(configurations.runtimeClasspath)
-    from({
-        configurations.runtimeClasspath.get()
-            .filter { it.name.endsWith("jar") }
-            .map { zipTree(it) }
-    })
-
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-
     exclude("META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA")
-
-//    archiveClassifier.set("all")
 }
-
-//tasks.build {
-//    dependsOn("fatJar")
-//}
 
 tasks.test {
     useJUnitPlatform()

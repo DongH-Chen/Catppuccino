@@ -41,7 +41,7 @@ company during your work or study time, bringing a touch of relaxation and delig
 
 ## How to Use
 
-- **Interact**: Try clicking or dragging the kitten with your mouse to see its reactions!
+- **Interact**: Try clicking or dragging the kitten with your mouse to see its reactions! Right-click the kitten (or use the tray icon) to exit.
 
 - **Ignore It**: Don't worry, it will entertain itself happily without getting in your way.
 

@@ -8,14 +8,16 @@ import java.util.Objects;
 public final class SystemTrayManager {
     private static final String PROJECT_NAME = "Catppuccino";
 
+    private SystemTrayManager() {
+    }
+
+    /** 初始化系统托盘图标；托盘不可用或初始化失败时静默降级，不影响小猫运行。 */
     public static void initialize() {
         if (!SystemTray.isSupported()) return;
-
         try {
-            TrayIcon trayIcon = createTrayIcon();
-            SystemTray.getSystemTray().add(trayIcon);
+            SystemTray.getSystemTray().add(createTrayIcon());
         } catch (Exception e) {
-            throw new RuntimeException("Failed to initialize system tray", e);
+            System.err.println("Failed to initialize system tray: " + e.getMessage());
         }
     }
 
