@@ -2,7 +2,6 @@ package dev.cdh.affiliate;
 
 import dev.cdh.constants.Behave;
 import dev.cdh.constants.BubbleState;
-import dev.cdh.constants.Layout;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,6 +10,8 @@ import java.awt.event.MouseEvent;
 
 public final class CatWindow extends JWindow {
     private final Cat cat;
+    public static final int WINDOW_SIZE = 100;
+    public static final int BUBBLE_SIZE = 30;
 
     public CatWindow(Cat cat) {
         this.cat = cat;
@@ -21,8 +22,8 @@ public final class CatWindow extends JWindow {
 
     private void setupWindow() {
         setType(Type.UTILITY);
-        setSize(Layout.WINDOW_SIZE, Layout.WINDOW_SIZE);
-        setPreferredSize(new Dimension(Layout.WINDOW_SIZE, Layout.WINDOW_SIZE));
+        setSize(WINDOW_SIZE, WINDOW_SIZE);
+        setPreferredSize(new Dimension(WINDOW_SIZE, WINDOW_SIZE));
         setLocationRelativeTo(null);
         setAlwaysOnTop(true);
         setBackground(new Color(0, 0, 0, 0));

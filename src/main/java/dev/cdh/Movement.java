@@ -6,17 +6,14 @@ import java.awt.*;
 import java.util.random.RandomGenerator;
 
 public final class Movement {
-    // 所有显示器组成的虚拟桌面边界（多显示器时可能包含负坐标）。 
+    // The virtual desktop boundaries made up of all monitors
+    // may include negative coordinates when using multiple monitors.
     public static final Rectangle VIRTUAL_BOUNDS = calculateVirtualScreenBounds();
 
-    // 猫允许探出屏幕边缘的余量（像素）。 
-    private static final int EDGE_OVERFLOW_X = 10;
-    private static final int EDGE_OVERFLOW_Y = 35;
-
-    // 随机目标与当前位置的最小距离差（像素）。 
-    private static final int MIN_TARGET_DISTANCE = 400;
-    // 随机目标生成的最大尝试次数，避免小屏幕上死循环。 
-    private static final int MAX_TARGET_ATTEMPTS = 100;
+    private static final int EDGE_OVERFLOW_X = 10,
+            EDGE_OVERFLOW_Y = 35,
+            MIN_TARGET_DISTANCE = 400,
+            MAX_TARGET_ATTEMPTS = 100;
 
     private Movement() {
     }
@@ -30,7 +27,6 @@ public final class Movement {
             virtualBounds = virtualBounds.union(config.getBounds());
         }
         if (virtualBounds.isEmpty()) {
-            // 无法获取显示信息（如无头环境）时的兜底值
             virtualBounds.setSize(1920, 1080);
         }
         return virtualBounds;
@@ -69,7 +65,6 @@ public final class Movement {
 
     public static Point generateRandomTarget(Point currentPos, Dimension windowSize) {
         RandomGenerator random = RandomGenerator.getDefault();
-        // 防止极小屏幕或异常窗口尺寸导致 nextInt 边界为负
         int width = Math.max(1, VIRTUAL_BOUNDS.width - windowSize.width - 20);
         int height = Math.max(1, VIRTUAL_BOUNDS.height - windowSize.height - 20);
 

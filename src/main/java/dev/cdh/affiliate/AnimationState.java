@@ -2,10 +2,10 @@ package dev.cdh.affiliate;
 
 @SuppressWarnings("unused")
 public final class AnimationState {
-    private int frameNum = 0,
-            animationSteps = 0,
-            bubbleFrame = 0,
-            bubbleSteps = 0;
+    private int frameNum = 0;
+    private int animationSteps = 0;
+    private int bubbleFrame = 0;
+    private int bubbleSteps = 0;
 
     public int frameNum() {
         return frameNum;

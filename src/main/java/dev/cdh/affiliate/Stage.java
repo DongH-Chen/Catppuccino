@@ -13,7 +13,8 @@ import java.util.List;
 import java.util.Map;
 
 public final class Stage extends JPanel {
-    private static final int BASE_X = 30, BASE_Y = 40;
+    private static final int BASE_X = 30;
+    private static final int BASE_Y = 40;
 
     private static final Map<Behave, PositionCalculator> POSITION_CACHE = createPositionCache();
 
@@ -68,11 +69,9 @@ public final class Stage extends JPanel {
         if (frames == null || frames.isEmpty()) return;
         BufferedImage img = frames.get(state.frameNum());
         if (needsFlipping()) {
-            // 缓存键包含猫皮肤类型，避免不同皮肤之间撞键
             String flipKey = cat.catType() + ":" + cat.currentAction().name() + ":" + state.frameNum();
             img = ImageCache.getOrFlip(img, flipKey);
         }
-        // 帧已在加载时预缩放到窗口尺寸，此处直接 1:1 绘制
         g2d.drawImage(img, 0, 0, null);
     }
 
@@ -83,7 +82,6 @@ public final class Stage extends JPanel {
         AnimationState state = cat.animationState();
         BufferedImage bubble = frames.get(state.bubbleFrame());
         Point pos = calculateBubblePosition();
-        // 气泡帧已在加载时预缩放到气泡尺寸
         g2d.drawImage(bubble, pos.x, pos.y, null);
     }
 

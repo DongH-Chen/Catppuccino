@@ -3,7 +3,7 @@ package dev.cdh.affiliate;
 import dev.cdh.ImageCache;
 import dev.cdh.constants.Behave;
 import dev.cdh.constants.BubbleState;
-import dev.cdh.constants.Layout;
+import dev.cdh.skin.CatSkin;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -14,16 +14,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.random.RandomGenerator;
 
 public final class ResourcesLoader {
-    private static final List<String> CAT_TYPES = List.of("calico_cat", "grey_tabby_cat", "orange_cat", "white_cat");
-    private static final RandomGenerator RAN = RandomGenerator.getDefault();
-
     private final String selectedCatType;
 
-    public ResourcesLoader() {
-        this.selectedCatType = CAT_TYPES.get(RAN.nextInt(CAT_TYPES.size()));
+    /**
+     * @param skin 皮肤描述，其 {@link CatSkin#resourceRoot()} 作为资源根目录
+     */
+    public ResourcesLoader(CatSkin skin) {
+        this.selectedCatType = Objects.requireNonNull(skin).resourceRoot();
     }
 
     public String catType() {
@@ -33,7 +32,7 @@ public final class ResourcesLoader {
     public List<BufferedImage> loadFrames(Behave behave) {
         String cacheKey = selectedCatType + ":" + behave.name();
         return ImageCache.getOrLoadFrames(cacheKey,
-                () -> loadFramesInternal(behave.name().toLowerCase(), behave.frame(), Layout.WINDOW_SIZE));
+                () -> loadFramesInternal(behave.name().toLowerCase(), behave.frame(), CatWindow.WINDOW_SIZE));
     }
 
     public List<BufferedImage> loadBubbleFrames(BubbleState state) {
@@ -42,7 +41,7 @@ public final class ResourcesLoader {
         }
         String cacheKey = "bubble:" + state.name();
         return ImageCache.getOrLoadFrames(cacheKey,
-                () -> loadFramesInternal(state.name().toLowerCase(), state.frame(), Layout.BUBBLE_SIZE));
+                () -> loadFramesInternal(state.name().toLowerCase(), state.frame(), CatWindow.BUBBLE_SIZE));
     }
 
     private List<BufferedImage> loadFramesInternal(String actionName, int frameCount, int targetSize) {
@@ -55,10 +54,6 @@ public final class ResourcesLoader {
         return frames;
     }
 
-    /**
-     * 统一转换为 ARGB 并预缩放到目标尺寸，避免每帧绘制时重复缩放。
-     * 使用最近邻插值以保持原有像素风外观。
-     */
     private BufferedImage prepareImage(BufferedImage image, int targetSize) {
         if (image.getType() == BufferedImage.TYPE_INT_ARGB
                 && image.getWidth() == targetSize
