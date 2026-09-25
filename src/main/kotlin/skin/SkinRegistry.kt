@@ -2,13 +2,12 @@ package dev.cdh.skin
 
 import java.io.IOException
 import java.util.*
-import java.util.random.RandomGenerator
+import kotlin.random.Random
 
 class SkinRegistry private constructor(val skins: MutableList<CatSkin>) {
-    private val random: RandomGenerator = RandomGenerator.getDefault()
 
     fun randomSkin(): CatSkin {
-        return skins[random.nextInt(skins.size)]
+        return skins[Random.nextInt(skins.size)]
     }
 
     companion object {
