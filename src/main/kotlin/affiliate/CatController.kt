@@ -16,7 +16,7 @@ class CatController(private val cat: Cat) {
     }
 
     fun start() {
-        cat.window().isVisible = true
+        cat.window.isVisible = true
         cat.changeAction(Behave.CURLED)
         Timer(TICK_MS) {
             cat.update()

@@ -7,20 +7,14 @@ import dev.cdh.skin.CatSkin
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.io.IOException
-import java.io.InputStream
 import java.util.*
 import javax.imageio.ImageIO
 
 class ResourcesLoader(skin: CatSkin?) {
-    private val selectedCatType = Objects.requireNonNull<CatSkin?>(skin)!!.resourceRoot()
+     val selectedCatType = skin!!.resourceRoot()
 
-    fun catType(): String {
-        return selectedCatType
-    }
-
-    fun loadFrames(behave: Behave): MutableList<BufferedImage?>? {
-        val cacheKey = selectedCatType + ":" + behave.name
-        return ImageCache.getOrLoadFrames(cacheKey) {
+    fun loadFrames(behave: Behave): MutableList<BufferedImage> {
+        return ImageCache.getOrLoadFrames("$selectedCatType:${behave.name}") {
             loadFramesInternal(
                 behave.name.lowercase(Locale.getDefault()),
                 behave.frame,
@@ -29,13 +23,12 @@ class ResourcesLoader(skin: CatSkin?) {
         }
     }
 
-    fun loadBubbleFrames(state: BubbleState?): MutableList<BufferedImage?>? {
+    fun loadBubbleFrames(state: BubbleState?): MutableList<BufferedImage> {
         if (state == BubbleState.NONE) {
             return mutableListOf()
         }
-        val cacheKey = "bubble:" + state!!.name
         return ImageCache.getOrLoadFrames(
-            cacheKey
+            "bubble:${state!!.name}"
         ) {
             loadFramesInternal(
                 state.name.lowercase(Locale.getDefault()),
@@ -45,18 +38,17 @@ class ResourcesLoader(skin: CatSkin?) {
         }
     }
 
-    private fun loadFramesInternal(actionName: String?, frameCount: Int, targetSize: Int): MutableList<BufferedImage?> {
-        val frames: MutableList<BufferedImage?> = ArrayList<BufferedImage?>(frameCount)
-        val basePath = selectedCatType + "/" + actionName
+    private fun loadFramesInternal(actionName: String?, frameCount: Int, targetSize: Int): MutableList<BufferedImage> {
+        val frames: MutableList<BufferedImage> = ArrayList(frameCount)
+        val basePath = "$selectedCatType/$actionName"
         for (i in 1..frameCount) {
-            val path = String.format("%s/%s_%d.png", basePath, actionName, i)
-            frames.add(prepareImage(loadImage(path)!!, targetSize))
+            frames.add(prepareImage(loadImage("$basePath/${actionName}_$i.png")!!, targetSize))
         }
         return frames
     }
 
     private fun prepareImage(image: BufferedImage, targetSize: Int): BufferedImage {
-        if (image.getType() == BufferedImage.TYPE_INT_ARGB && image.getWidth() == targetSize && image.getHeight() == targetSize) {
+        if (image.type == BufferedImage.TYPE_INT_ARGB && image.width == targetSize && image.height == targetSize) {
             return image
         }
         val prepared = BufferedImage(targetSize, targetSize, BufferedImage.TYPE_INT_ARGB)
@@ -70,7 +62,7 @@ class ResourcesLoader(skin: CatSkin?) {
     private fun loadImage(path: String?): BufferedImage? {
         try {
             javaClass.classLoader.getResourceAsStream(path).use { stream ->
-                return ImageIO.read(Objects.requireNonNull<InputStream?>(stream, "Missing resource: " + path))
+                return ImageIO.read(stream)
             }
         } catch (e: IOException) {
             throw RuntimeException("Failed to load: $path", e)

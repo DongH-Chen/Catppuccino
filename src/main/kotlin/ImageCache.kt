@@ -3,27 +3,19 @@ package dev.cdh
 import java.awt.image.BufferedImage
 
 object ImageCache {
-    private val FRAME_CACHE: MutableMap<String?, MutableList<BufferedImage?>?> =
+    private val FRAME_CACHE: MutableMap<String, MutableList<BufferedImage>> =
         HashMap()
-    private val FLIP_CACHE: MutableMap<String?, BufferedImage> = HashMap()
+    private val FLIP_CACHE: MutableMap<String, BufferedImage> = HashMap()
 
-    fun getOrLoadFrames(key: String?, loader: FrameLoader): MutableList<BufferedImage?>? {
-        return FRAME_CACHE.computeIfAbsent(key) { loader.load() }
-    }
+    fun getOrLoadFrames(key: String, loader: () -> MutableList<BufferedImage>): MutableList<BufferedImage> = FRAME_CACHE.getOrPut(key, loader)
 
-    fun getOrFlip(original: BufferedImage?, key: String?): BufferedImage {
-        return FLIP_CACHE.computeIfAbsent(key) { flipImage(original) }
-    }
+    fun getOrFlip(original: BufferedImage, key: String): BufferedImage = FLIP_CACHE.getOrPut(key) { original.flipImage() }
 
-    private fun flipImage(source: BufferedImage?): BufferedImage {
-        val flipped = BufferedImage(source!!.width, source.height, BufferedImage.TYPE_INT_ARGB)
+    private fun BufferedImage.flipImage(): BufferedImage {
+        val flipped = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
         val g2d = flipped.createGraphics()
-        g2d.drawImage(source, source.width, 0, -source.width, source.height, null)
+        g2d.drawImage(this, width, 0, -width, height, null)
         g2d.dispose()
         return flipped
-    }
-
-    fun interface FrameLoader {
-        fun load(): MutableList<BufferedImage?>?
     }
 }

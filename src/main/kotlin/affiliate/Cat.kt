@@ -8,21 +8,24 @@ import dev.cdh.Movement.generateRandomTarget
 import dev.cdh.State
 import java.awt.Point
 import java.awt.image.BufferedImage
-import java.util.random.RandomGenerator
 import kotlin.math.abs
+import kotlin.random.Random
 
 class Cat(private val resourceLoader: ResourcesLoader) {
-    private val window: CatWindow = CatWindow(this)
-    private val ran: RandomGenerator = RandomGenerator.getDefault()
+    val window: CatWindow = CatWindow(this)
 
-    private var currentAction = Behave.SLEEP
-    private var currentFrames: MutableList<BufferedImage?>? = null
-    private var currentBubbleFrames: MutableList<BufferedImage?>? = null
-    private var layingDir = Direction.RIGHT
+    var currentAction = Behave.SLEEP
+        private set
+    var currentFrames: MutableList<BufferedImage>? = null
+        private set
+    var currentBubbleFrames: MutableList<BufferedImage>? = null
+    var layingDir = Direction.RIGHT
+        private set
     private var state = State.DEFAULT
-    private var bubbleState = BubbleState.NONE
+    var bubbleState = BubbleState.NONE
+        private set
     private val wanderTarget = Point(0, 0)
-    private val animationState = AnimationState()
+    val animationState = AnimationState()
 
     init {
         loadFramesForAction(currentAction)
@@ -80,13 +83,12 @@ class Cat(private val resourceLoader: ResourcesLoader) {
         // Switch after about 0.8 seconds (24 steps × 33ms), keeping in sync with the original rhythm
         if (animationState.animationSteps() - currentAction.delay > 24) {
             animationState.reset()
-            changeAction(if (ran.nextBoolean()) Behave.CURLED else Behave.SLEEP)
+            changeAction(if (Random.nextBoolean()) Behave.CURLED else Behave.SLEEP)
         }
     }
 
     private fun shouldTransitionFromSitting(): Boolean {
-        return currentAction == Behave.SITTING &&
-                animationState.frameNum() == currentAction.frame - 1
+        return currentAction == Behave.SITTING && animationState.frameNum() == currentAction.frame - 1
     }
 
     private fun handleSittingTransition() {
@@ -138,7 +140,7 @@ class Cat(private val resourceLoader: ResourcesLoader) {
             // getting stuck at the edge of the screen
             state = State.DEFAULT
             if (isMovingAction(currentAction)) {
-                changeAction(if (ran.nextBoolean()) Behave.LAYING else Behave.SITTING)
+                changeAction(if (Random.nextBoolean()) Behave.LAYING else Behave.SITTING)
                 animationState.resetFrame()
             }
             return
@@ -157,10 +159,8 @@ class Cat(private val resourceLoader: ResourcesLoader) {
             Behave.RIGHT -> layingDir = Direction.RIGHT
             Behave.UP, Behave.DOWN -> {
                 if (state != State.WANDER) {
-                    flag = if (ran.nextInt(3) >= 1)
-                        changeAction(Behave.LAYING)
-                    else
-                        changeAction(Behave.SITTING)
+                    flag = if (Random.nextInt(3) >= 1) changeAction(Behave.LAYING)
+                    else changeAction(Behave.SITTING)
                 }
             }
 
@@ -170,16 +170,18 @@ class Cat(private val resourceLoader: ResourcesLoader) {
     }
 
     private fun performMovement() {
-        val loc = window.location
-        Movement.move(loc, currentAction)
+        val oldLoc = window.location
+        val newLoc = Point(oldLoc)
+        Movement.move(newLoc, currentAction)
 
-        Movement.clampToScreen(loc, window.size)
-
-        window.location = loc
+        Movement.clampToScreen(newLoc, window.size)
+        if (newLoc != oldLoc) {
+            window.location = newLoc
+        }
     }
 
     fun tryWandering() {
-        if (ran.nextBoolean()) return
+        if (Random.nextBoolean()) return
 
         state = State.WANDER
         val screenLoc = window.locationOnScreen
@@ -205,35 +207,7 @@ class Cat(private val resourceLoader: ResourcesLoader) {
 
     // Getters
     fun catType(): String {
-        return resourceLoader.catType()
-    }
-
-    fun currentAction(): Behave {
-        return currentAction
-    }
-
-    fun currentFrames(): MutableList<BufferedImage?>? {
-        return currentFrames
-    }
-
-    fun currentBubbleFrames(): MutableList<BufferedImage?>? {
-        return currentBubbleFrames
-    }
-
-    fun layingDir(): Direction {
-        return layingDir
-    }
-
-    fun bubbleState(): BubbleState {
-        return bubbleState
-    }
-
-    fun animationState(): AnimationState {
-        return animationState
-    }
-
-    fun window(): CatWindow {
-        return window
+        return resourceLoader.selectedCatType
     }
 
     companion object {

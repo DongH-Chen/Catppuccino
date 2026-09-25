@@ -7,10 +7,6 @@ import java.util.random.RandomGenerator
 class SkinRegistry private constructor(val skins: MutableList<CatSkin?>) {
     private val random: RandomGenerator = RandomGenerator.getDefault()
 
-    fun all(): MutableList<CatSkin?> {
-        return skins
-    }
-
     fun randomSkin(): CatSkin? {
         return skins[random.nextInt(skins.size)]
     }
