@@ -26,7 +26,7 @@ class CatWindow(private val cat: Cat) : JWindow() {
     }
 
     private fun setupMouseListeners() {
-        val adapter: MouseAdapter = object : MouseAdapter() {
+        val adapter = object : MouseAdapter() {
             private val dragOffset = Point(0, 0)
 
             override fun mousePressed(e: MouseEvent) {
@@ -41,14 +41,14 @@ class CatWindow(private val cat: Cat) : JWindow() {
                 }
             }
 
-            override fun mouseReleased(e: MouseEvent?) {
+            override fun mouseReleased(e: MouseEvent) {
                 if (cat.currentAction == Behave.RISING) {
                     cat.changeAction(Behave.LAYING)
                     cat.animationState.frameNum=0
                 }
             }
 
-            override fun mouseClicked(e: MouseEvent?) {
+            override fun mouseClicked(e: MouseEvent) {
                 cat.bubbleState = BubbleState.HEART
             }
         }

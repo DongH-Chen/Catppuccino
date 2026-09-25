@@ -27,8 +27,8 @@ class Stage(private val cat: Cat) : JPanel() {
     }
 
     private fun calculateBubblePosition(): Point {
-        val calculator: PositionCalculator? = POSITION_CACHE[cat.currentAction]
-        if (calculator != null) return calculator.calculate(cat.layingDir)
+        val calculator = POSITION_CACHE[cat.currentAction]
+        if (calculator != null) return calculator(cat.layingDir)
         return Point(BASE_X, BASE_Y)
     }
 
@@ -60,29 +60,25 @@ class Stage(private val cat: Cat) : JPanel() {
         g2d.drawImage(bubble, pos.x, pos.y, null)
     }
 
-    private fun interface PositionCalculator {
-        fun calculate(direction: Direction?): Point
-    }
-
     companion object {
         private const val BASE_X = 30
         private const val BASE_Y = 40
 
-        private val POSITION_CACHE: MutableMap<Behave?, PositionCalculator?> = createPositionCache()
+        private val POSITION_CACHE: MutableMap<Behave, (Direction) -> Point> = createPositionCache()
 
-        private fun createPositionCache(): MutableMap<Behave?, PositionCalculator?> {
-            val cache = EnumMap<Behave, PositionCalculator>(Behave::class.java)
+        private fun createPositionCache(): MutableMap<Behave, (Direction) -> Point> {
+            val cache = EnumMap<Behave, (Direction) -> Point>(Behave::class.java)
             cache[Behave.SLEEP] =
-                PositionCalculator { dir: Direction? -> Point(if (dir == Direction.LEFT) 0 else BASE_X + 30, BASE_Y) }
+                 { dir: Direction? -> Point(if (dir == Direction.LEFT) 0 else BASE_X + 30, BASE_Y) }
             cache[Behave.LAYING] =
-                PositionCalculator { dir: Direction? -> Point(if (dir == Direction.LEFT) 0 else BASE_X + 30, BASE_Y) }
+                 { dir: Direction? -> Point(if (dir == Direction.LEFT) 0 else BASE_X + 30, BASE_Y) }
             cache[Behave.LEFT] =
-                PositionCalculator { dir: Direction? -> Point(if (dir == Direction.LEFT) 0 else BASE_X + 30, BASE_Y) }
+                 { dir: Direction? -> Point(if (dir == Direction.LEFT) 0 else BASE_X + 30, BASE_Y) }
             cache[Behave.RIGHT] =
-                PositionCalculator { dir: Direction? -> Point(if (dir == Direction.LEFT) 0 else BASE_X + 30, BASE_Y) }
-            cache[Behave.UP] = PositionCalculator { Point(BASE_X, BASE_Y - 25) }
-            cache[Behave.LICKING] = PositionCalculator { Point(BASE_X, BASE_Y - 25) }
-            cache[Behave.SITTING] = PositionCalculator { Point(BASE_X, BASE_Y - 25) }
+                 { dir: Direction? -> Point(if (dir == Direction.LEFT) 0 else BASE_X + 30, BASE_Y) }
+            cache[Behave.UP] =  { Point(BASE_X, BASE_Y - 25) }
+            cache[Behave.LICKING] =  { Point(BASE_X, BASE_Y - 25) }
+            cache[Behave.SITTING] =  { Point(BASE_X, BASE_Y - 25) }
             return cache
         }
     }
