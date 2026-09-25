@@ -1,5 +1,5 @@
 plugins {
-    id("java")
+    kotlin("jvm") version "2.4.20"
     application
 }
 
@@ -11,7 +11,7 @@ repositories {
 }
 
 application {
-    mainClass = "dev.cdh.Main"
+    mainClass = "dev.cdh.MainKt"
     mainModule = "dev.cdh"
 }
 
@@ -21,10 +21,8 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(25))
-    }
+kotlin {
+    jvmToolchain(25)
 }
 
 tasks.jar {
@@ -32,7 +30,7 @@ tasks.jar {
 
     manifest {
         attributes(
-            "Main-Class" to "dev.cdh.Main",
+            "Main-Class" to "dev.cdh.MainKt",
             "Implementation-Title" to project.name,
             "Implementation-Version" to project.version,
             "Implementation-Vendor" to "dev.cdh",
@@ -43,6 +41,8 @@ tasks.jar {
     }
 
     from(sourceSets.main.get().output)
+    val dependencies = configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) }
+    from(dependencies)
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     exclude("META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA")
 }
