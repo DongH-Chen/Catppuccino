@@ -23,7 +23,13 @@ class Cat(private val resourceLoader: ResourcesLoader) {
         private set
     private var state = State.DEFAULT
     var bubbleState = BubbleState.NONE
-        private set
+        set(state) {
+            if (field != state) {
+                field = state
+                loadBubbleFrames(state)
+                animationState.bubbleFrame = 0
+            }
+        }
     private val wanderTarget = Point(0, 0)
     val animationState = AnimationState()
 
@@ -58,9 +64,9 @@ class Cat(private val resourceLoader: ResourcesLoader) {
     }
 
     private fun updateAnimation() {
-        animationState.incrementAnimationSteps()
+        animationState.animationSteps++
 
-        if (animationState.animationSteps() >= currentAction.delay) {
+        if (animationState.animationSteps >= currentAction.delay) {
             if (shouldTransitionFromLaying()) {
                 handleLayingTransition()
             } else if (shouldTransitionFromSitting()) {
@@ -70,25 +76,25 @@ class Cat(private val resourceLoader: ResourcesLoader) {
             }
         }
 
-        if (animationState.frameNum() >= currentAction.frame) {
-            animationState.resetFrame()
+        if (animationState.frameNum >= currentAction.frame) {
+            animationState.frameNum = 0
         }
     }
 
     private fun shouldTransitionFromLaying(): Boolean {
-        return currentAction == Behave.LAYING && animationState.frameNum() == currentAction.frame - 1
+        return currentAction == Behave.LAYING && animationState.frameNum == currentAction.frame - 1
     }
 
     private fun handleLayingTransition() {
         // Switch after about 0.8 seconds (24 steps × 33ms), keeping in sync with the original rhythm
-        if (animationState.animationSteps() - currentAction.delay > 24) {
+        if (animationState.animationSteps - currentAction.delay > 24) {
             animationState.reset()
             changeAction(if (Random.nextBoolean()) Behave.CURLED else Behave.SLEEP)
         }
     }
 
     private fun shouldTransitionFromSitting(): Boolean {
-        return currentAction == Behave.SITTING && animationState.frameNum() == currentAction.frame - 1
+        return currentAction == Behave.SITTING && animationState.frameNum == currentAction.frame - 1
     }
 
     private fun handleSittingTransition() {
@@ -101,35 +107,33 @@ class Cat(private val resourceLoader: ResourcesLoader) {
             updateBubbleStateBasedOnAction()
         }
 
-        animationState.incrementBubbleSteps()
+        animationState.bubbleSteps++
 
-        if (animationState.bubbleSteps() >= bubbleState.delay) {
+        if (animationState.bubbleSteps >= bubbleState.delay) {
             animationState.nextBubbleFrame()
         }
 
-        if (animationState.bubbleFrame() >= bubbleState.frame) {
-            animationState.resetBubbleFrame()
+        if (animationState.bubbleFrame >= bubbleState.frame) {
+            animationState.bubbleFrame = 0
             if (bubbleState == BubbleState.HEART) {
-                setBubbleState(BubbleState.NONE)
+                bubbleState = BubbleState.NONE
             }
         }
     }
 
     private fun updateBubbleStateBasedOnAction() {
         if (currentAction == Behave.SLEEP || currentAction == Behave.CURLED) {
-            setBubbleState(BubbleState.ZZZ)
+            bubbleState = BubbleState.ZZZ
         } else if (currentAction != Behave.SITTING) {
-            setBubbleState(BubbleState.NONE)
+            bubbleState = BubbleState.NONE
         }
     }
 
     private fun handleFrames() {
         if (currentAction == Behave.RISING) return
-
         if (state == State.WANDER) {
             handleWandering()
         }
-
         handleMovementActions()
     }
 
@@ -141,7 +145,7 @@ class Cat(private val resourceLoader: ResourcesLoader) {
             state = State.DEFAULT
             if (isMovingAction(currentAction)) {
                 changeAction(if (Random.nextBoolean()) Behave.LAYING else Behave.SITTING)
-                animationState.resetFrame()
+                animationState.frameNum = 0
             }
             return
         }
@@ -166,7 +170,7 @@ class Cat(private val resourceLoader: ResourcesLoader) {
 
             else -> {}
         }
-        if (flag) animationState.resetFrame()
+        if (flag) animationState.frameNum = 0
     }
 
     private fun performMovement() {
@@ -196,22 +200,12 @@ class Cat(private val resourceLoader: ResourcesLoader) {
         state = State.DEFAULT
     }
 
-    // Setters
-    fun setBubbleState(state: BubbleState) {
-        if (bubbleState != state) {
-            bubbleState = state
-            loadBubbleFrames(state)
-            animationState.resetBubbleFrame()
-        }
-    }
-
-    // Getters
     fun catType(): String {
         return resourceLoader.selectedCatType
     }
 
     companion object {
-        private fun isMovingAction(behave: Behave?): Boolean {
+        private fun isMovingAction(behave: Behave): Boolean {
             return behave == Behave.LEFT || behave == Behave.RIGHT || behave == Behave.UP || behave == Behave.DOWN
         }
     }

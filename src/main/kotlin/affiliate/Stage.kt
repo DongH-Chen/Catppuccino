@@ -42,9 +42,9 @@ class Stage(private val cat: Cat) : JPanel() {
     private fun paintCat(g2d: Graphics2D) {
         val state = cat.animationState
         val frames = cat.currentFrames ?: return
-        var img = frames[state.frameNum()]
+        var img = frames[state.frameNum]
         if (needsFlipping) {
-            val flipKey = "${cat.catType()}:${cat.currentAction.name}:${state.frameNum()}"
+            val flipKey = "${cat.catType()}:${cat.currentAction.name}:${state.frameNum}"
             img = ImageCache.getOrFlip(img, flipKey)
         }
         g2d.drawImage(img, 0, 0, null)
@@ -55,7 +55,7 @@ class Stage(private val cat: Cat) : JPanel() {
         val frames = cat.currentBubbleFrames ?: return
         if (frames.isEmpty()) return
         val state = cat.animationState
-        val bubble = frames[state.bubbleFrame()]
+        val bubble = frames[state.bubbleFrame]
         val pos = calculateBubblePosition()
         g2d.drawImage(bubble, pos.x, pos.y, null)
     }

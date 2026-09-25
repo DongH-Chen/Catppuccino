@@ -37,19 +37,19 @@ class CatWindow(private val cat: Cat) : JWindow() {
             override fun mouseDragged(e: MouseEvent) {
                 setLocation(e.locationOnScreen.x - dragOffset.x, e.locationOnScreen.y - dragOffset.y)
                 if (cat.changeAction(Behave.RISING)) {
-                    cat.animationState.resetFrame()
+                    cat.animationState.frameNum=0
                 }
             }
 
             override fun mouseReleased(e: MouseEvent?) {
                 if (cat.currentAction == Behave.RISING) {
                     cat.changeAction(Behave.LAYING)
-                    cat.animationState.resetFrame()
+                    cat.animationState.frameNum=0
                 }
             }
 
             override fun mouseClicked(e: MouseEvent?) {
-                cat.setBubbleState(BubbleState.HEART)
+                cat.bubbleState = BubbleState.HEART
             }
         }
         addMouseListener(adapter)
