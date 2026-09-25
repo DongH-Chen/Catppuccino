@@ -69,16 +69,16 @@ class Stage(private val cat: Cat) : JPanel() {
         private fun createPositionCache(): MutableMap<Behave, (Direction) -> Point> {
             val cache = EnumMap<Behave, (Direction) -> Point>(Behave::class.java)
             cache[Behave.SLEEP] =
-                 { dir: Direction? -> Point(if (dir == Direction.LEFT) 0 else BASE_X + 30, BASE_Y) }
+                { dir: Direction? -> Point(if (dir == Direction.LEFT) 0 else BASE_X + 30, BASE_Y) }
             cache[Behave.LAYING] =
-                 { dir: Direction? -> Point(if (dir == Direction.LEFT) 0 else BASE_X + 30, BASE_Y) }
+                { dir: Direction? -> Point(if (dir == Direction.LEFT) 0 else BASE_X + 30, BASE_Y) }
             cache[Behave.LEFT] =
-                 { dir: Direction? -> Point(if (dir == Direction.LEFT) 0 else BASE_X + 30, BASE_Y) }
+                { dir: Direction? -> Point(if (dir == Direction.LEFT) 0 else BASE_X + 30, BASE_Y) }
             cache[Behave.RIGHT] =
-                 { dir: Direction? -> Point(if (dir == Direction.LEFT) 0 else BASE_X + 30, BASE_Y) }
-            cache[Behave.UP] =  { Point(BASE_X, BASE_Y - 25) }
-            cache[Behave.LICKING] =  { Point(BASE_X, BASE_Y - 25) }
-            cache[Behave.SITTING] =  { Point(BASE_X, BASE_Y - 25) }
+                { dir: Direction? -> Point(if (dir == Direction.LEFT) 0 else BASE_X + 30, BASE_Y) }
+            cache[Behave.UP] = { Point(BASE_X, BASE_Y - 25) }
+            cache[Behave.LICKING] = { Point(BASE_X, BASE_Y - 25) }
+            cache[Behave.SITTING] = { Point(BASE_X, BASE_Y - 25) }
             return cache
         }
     }

@@ -10,8 +10,8 @@ import java.io.IOException
 import java.util.*
 import javax.imageio.ImageIO
 
-class ResourcesLoader(skin: CatSkin?) {
-     val selectedCatType = skin!!.resourceRoot()
+class ResourcesLoader(skin: CatSkin) {
+    val selectedCatType = skin.resourceRoot()
 
     fun loadFrames(behave: Behave): MutableList<BufferedImage> {
         return ImageCache.getOrLoadFrames("$selectedCatType:${behave.name}") {

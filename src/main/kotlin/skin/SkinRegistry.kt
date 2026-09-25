@@ -4,10 +4,10 @@ import java.io.IOException
 import java.util.*
 import java.util.random.RandomGenerator
 
-class SkinRegistry private constructor(val skins: MutableList<CatSkin?>) {
+class SkinRegistry private constructor(val skins: MutableList<CatSkin>) {
     private val random: RandomGenerator = RandomGenerator.getDefault()
 
-    fun randomSkin(): CatSkin? {
+    fun randomSkin(): CatSkin {
         return skins[random.nextInt(skins.size)]
     }
 
@@ -33,7 +33,7 @@ class SkinRegistry private constructor(val skins: MutableList<CatSkin?>) {
         fun fromProperties(props: Properties): SkinRegistry {
             val list = props.getProperty(SKINS_KEY, "").trim { it <= ' ' }
             check(list.isNotEmpty()) { "No skins declared in $CONFIG_PATH" }
-            val skins = ArrayList<CatSkin?>()
+            val skins = ArrayList<CatSkin>()
             for (id in list.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()) {
                 var id = id
                 id = id.trim { it <= ' ' }
